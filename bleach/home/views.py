@@ -38,7 +38,7 @@ def list(request):
 def edit(request,pk):
     instance_edited = animeinfo.objects.get(pk=pk)
     if request.method == "POST":
-        frm = animeform(request.POST,instance=instance_edited) #updates the fields after submission
+        frm = animeform(request.POST,request.FILES,instance=instance_edited) #updates the fields after submission
         if frm.is_valid():
             frm.save()
             return redirect('list')
