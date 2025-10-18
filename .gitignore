@@ -2,6 +2,7 @@
 bleachenv/
 env/
 venv/
+images/
 
 # Python cache files
 __pycache__/
