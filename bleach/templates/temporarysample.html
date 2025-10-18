@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>This is a sample webpage</title>
+    <style type="text/css" media="all">
+        table{
+            border-spacing:5px;
+        }
+        td,th{
+            padding:10px;
+        }
+    </style>
+</head>
+<body>
+    {% extends 'blank.html'%}
+    {% block content%}
+    <h1>ANIME LIST</h1>
+    <table>
+        <tr><th>title</th><th>year</th><th>summary</th><th>Big3</th></tr>
+    {%for anime in animes%}
+    <tr>
+        <td><h1><b>Title : {{anime.title}}</b></h1></td>
+        <td><p>Summary : {{anime.summary|upper}}</p> </td>
+        <td><h4>Year : {{anime.year|default:'not available'}}</h4></td>   <!--dont try to put the default value after a space syntax should be default:'anything' dont add -->
+        {% if anime.Big3 == "Yes" %}
+           <td><p style="color : green">YES, '{{anime.title}}' IS IN BIG3</p></td>
+        {% else %}
+           <td><p style="color : red">NO, '{{anime.title}}' IS NOT IN BIG3</p></td>
+        {% endif %}
+    {%endfor%}
+    </table>
+    {% endblock content%}
+</body>
+</html>

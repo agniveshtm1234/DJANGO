@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Hub - Anime List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style type="text/css" media="all">
+        .message-box {
+            margin: 1rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.4s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .message-box.success { background-color: #10b981; }
+        .message-box.error { background-color: #ef4444; }
+        .tick {
+            margin-right: 0.5rem;
+            font-size: 1.125rem;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .table-container {
+            transition: all 0.3s ease;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+        .search-bar {
+            transition: all 0.3s ease;
+        }
+        .search-bar:focus {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-gray-900 text-white py-4 px-6 shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-6">
+                <a href="/" class="text-3xl font-extrabold text-indigo-400 tracking-tight">Anime Hub</a>
+                <a href="{% url 'create' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">Create</a>
+            </div>
+            <ul class="flex space-x-6">
+                <li><a href="{% url 'user_logout' %}" class="text-lg bg-gray-700 hover:bg-indigo-600 text-white px-5 py-2 rounded-lg transition duration-300 ease-in-out">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% include 'menu.html' %}
+    <main class="container mx-auto px-4 py-10">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Anime List</h1>
+            <div class="flex space-x-4">
+                <input type="text" id="searchInput" placeholder="Search anime..." class="search-bar px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button id="toggleView" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-300">Toggle Card View</button>
+            </div>
+        </div>
+        {% if messages %}
+            <div id="message-container" class="mb-6">
+                {% for message in messages %}
+                <div class="message-box {{ message.tags }}">
+                    <span class="tick">✔</span> {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            <script>
+                setTimeout(() => {
+                    const msg = document.getElementById('message-container');
+                    if (msg) {
+                        msg.style.transition = 'opacity 0.8s ease-out';
+                        msg.style.opacity = '0';
+                        setTimeout(() => msg.remove(), 800);
+                    }
+                }, 2000);
+            </script>
+        {% endif %}
+        <div id="animeContainer" class="table-container">
+            <table class="w-full bg-white shadow-2xl rounded-lg overflow-hidden">
+                <thead class="bg-indigo-600 text-white">
+                    <tr>
+                        <th class="py-4 px-6 text-left">Title</th>
+                        <th class="py-4 px-6 text-left">Summary</th>
+                        <th class="py-4 px-6 text-left">Year</th>
+                        <th class="py-4 px-6 text-left">Logo</th>
+                        <th class="py-4 px-6 text-left">Big3</th>
+                        <th class="py-4 px-6 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for anime in animes %}
+                    <tr class="border-b hover:bg-gray-50 transition duration-200">
+                        <td class="py-4 px-6 font-bold text-gray-900">{{ anime.title }}</td>
+                        <td class="py-4 px-6 text-gray-700">{{ anime.summary|upper }}</td>
+                        <td class="py-4 px-6 text-gray-600">{{ anime.year|default:'Not Available' }}</td>
+                        <td class="py-4 px-6"><img src="{{ anime.img.url }}" alt="{{ anime.title }}" class="w-24 h-24 object-cover rounded-md"></td>
+                        <td class="py-4 px-6">
+                            {% if anime.Big3 == "Yes" %}
+                                <span class="text-green-600 font-semibold">YES, '{{ anime.title }}' IS IN BIG3</span>
+                            {% else %}
+                                <span class="text-red-600 font-semibold">NO, '{{ anime.title }}' IS NOT IN BIG3</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-6 flex space-x-2">
+                            <a href="{% url 'edit' anime.id %}" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Edit</a>
+                            <a href="{% url 'delete' anime.id %}" class="bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="cardContainer" class="card-grid hidden">
+            {% for anime in animes %}
+            <div class="card bg-white rounded-lg shadow-lg p-6">
+                <img src="{{ anime.img.url }}" alt="{{ anime.title }}" class="w-full h-40 object-cover rounded-md mb-4">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">{{ anime.title }}</h2>
+                <p class="text-gray-700 mb-2">{{ anime.summary|upper|truncatechars:100 }}</p>
+                <p class="text-gray-600 mb-2">Year: {{ anime.year|default:'Not Available' }}</p>
+                <p class="{% if anime.Big3 == 'Yes' %}text-green-600{% else %}text-red-600{% endif %} font-semibold mb-4">
+                    {% if anime.Big3 == "Yes" %}YES, IN BIG3{% else %}NO, NOT IN BIG3{% endif %}
+                </p>
+                <div class="flex space-x-2">
+                    <a href="{% url 'edit' anime.id %}" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Edit</a>
+                    <a href="{% url 'delete' anime.id %}" class="bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-8 flex justify-center">
+            <div class="inline-flex rounded-lg shadow-sm">
+                {% if animes.has_previous %}
+                    <a href="?page={{ animes.previous_page_number }}" class="px-4 py-2 bg-indigo-600 text-white rounded-l-lg hover:bg-indigo-700">Previous</a>
+                {% endif %}
+                <span class="px-4 py-2 bg-gray-200 text-gray-700">Page {{ animes.number }} of {{ animes.paginator.num_pages }}</span>
+                {% if animes.has_next %}
+                    <a href="?page={{ animes.next_page_number }}" class="px-4 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('#animeContainer tr');
+        const cards = document.querySelectorAll('.card');
+
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            tableRows.forEach(row => {
+                const title = row.querySelector('td:first-child').textContent.toLowerCase();
+                row.style.display = title.includes(searchTerm) ? '' : 'none';
+            });
+            cards.forEach(card => {
+                const title = card.querySelector('h2').textContent.toLowerCase();
+                card.style.display = title.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Toggle between table and card view
+        const toggleButton = document.getElementById('toggleView');
+        const tableContainer = document.getElementById('animeContainer');
+        const cardContainer = document.getElementById('cardContainer');
+
+        toggleButton.addEventListener('click', () => {
+            tableContainer.classList.toggle('hidden');
+            cardContainer.classList.toggle('hidden');
+            toggleButton.textContent = tableContainer.classList.contains('hidden') ? 'Toggle Table View' : 'Toggle Card View';
+        });
+    </script>
+</body>
+</html>

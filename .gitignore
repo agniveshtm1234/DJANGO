@@ -1,0 +1,17 @@
+# Virtual environment
+bleachenv/
+env/
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Django files
+*.sqlite3
+*.log
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store

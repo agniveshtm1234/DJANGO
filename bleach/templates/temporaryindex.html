@@ -1,0 +1,33 @@
+{% load static %}
+<html>
+<head>
+    <title>This is a sample webpage</title>
+</head>
+<body>
+    {% include 'menu.html' %}
+    <ul>
+        <li><a href="{% url 'shinigami:start_hello' %}">Go to Soul Society</a></li>
+    </ul>
+    <h1>ANIME LIST</h1>
+    {%for anime in animes%}
+        <br>
+        <h1><b>Title : {{anime.title}}</b></h1>
+        <p>Summary : {{anime.summary|upper}}</p> 
+        <h4>Year : {{anime.year|default:'not available'}}</h4>   <!--dont try to put the default value after a space syntax should be default:'anything' dont add -->
+        {% if anime.Big3 %}                                       <!--spaces while declaring that cuz , the parser splits it differently-->
+            <p style="color:green"><b>YES, '{{anime.title}}' IS IN BIG3 ANIME!!!</b></p>
+        {% else %}
+            <p style = "color:red"><b>NO, '{{anime.title}} IS NOT IN BIG3 ANIME!!</b></p>
+        {% endif %}
+        <img src = "{% static 'img/' %}{{anime.img}}"/>   <!--APPENDING PATH WITH IMAGES FROM STATIC FILES-->
+        <br>
+    {%endfor%}
+    <form method = "post" enctype="multipart/form-data">
+        {% csrf_token %}                                <!--Always put csrf token inside form tag-->
+        Title: <input type="text" name="title"/>
+        Year:  <input type="number" name="year"/>
+        summary: <input type = "text" name="summary"/>
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>

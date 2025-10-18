@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Hub - Create Anime</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style type="text/css" media="all">
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.3);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .form-group input[type="file"] {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .errorlist {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            list-style: none;
+            padding: 0;
+        }
+        .errorlist li {
+            background: #fee2e2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin: 0.25rem 0;
+        }
+        .submit-button {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-gray-900 text-white py-4 px-6 shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-6">
+                <i class="fas fa-dragon text-3xl text-indigo-400"></i>
+                <a href="/" class="text-3xl font-extrabold text-indigo-400 tracking-tight">Anime Hub</a>
+                <a href="{% url 'list' %}" class="text-lg bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    <i class="fas fa-list mr-1"></i> View List
+                </a>
+            </div>
+            <ul class="flex space-x-6">
+                <li><a href="{% url 'user_logout' %}" class="text-lg bg-gray-700 hover:bg-red-600 text-white px-5 py-2 rounded-lg transition duration-300 ease-in-out">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+    {% include 'menu.html' %}
+    <main class="container mx-auto px-4 py-10">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6 text-white">
+                    <h1 class="text-3xl font-extrabold text-center flex items-center justify-center">
+                        <i class="fas fa-plus-circle mr-3"></i>
+                        Create New Anime
+                    </h1>
+                </div>
+                <div class="p-8">
+                    <form method="post" enctype="multipart/form-data" class="space-y-6">
+                        {% csrf_token %}
+                        {% for field in frm %}
+                            <div class="form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.errors %}
+                                    {{ field.errors }}
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <p class="text-sm text-gray-500 mt-1">{{ field.help_text }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="pt-6">
+                            <button type="submit" class="submit-button w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Submit Anime
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-gray-900 text-white text-center py-4 mt-12">
+        <p>&copy; 2025 Anime Hub. All rights reserved.</p>
+    </footer>
+</body>
+</html>
