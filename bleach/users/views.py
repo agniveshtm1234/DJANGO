@@ -9,7 +9,7 @@ def user_login(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username,password=password)
-        if user:
+        if user is not None:
             login(request,user)
             return redirect('list')
         else:
