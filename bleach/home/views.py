@@ -49,7 +49,7 @@ def edit(request,pk):
 @login_required(login_url='login/')
 def delete(request,pk):
     instance=animeinfo.objects.get(pk=pk) #collect the record
-    if instance.img:  # Replace 'image' with your ImageField name
+    if instance.img == True:  # Replace 'image' with your ImageField name
         image_path = instance.img.path
         if os.path.exists(image_path):
             os.remove(image_path) #deletes the user added images from media folder
