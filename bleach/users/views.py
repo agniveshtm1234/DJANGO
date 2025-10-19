@@ -28,7 +28,7 @@ def signup(request):
         password = request.POST['password']
         try:
             user = User.objects.create_user(username=username,password=password)
-            redirect('user_login')
+            return redirect('user_login')
         except Exception as e:
             error=str(e)
     return render(request,'users/signup.html',{'user':user,'error_message':error})
