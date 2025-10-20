@@ -5,6 +5,7 @@ class animeform(ModelForm):    #using this method rather than html
     class Meta:
         model=animeinfo
         fields='__all__' 
+        exclude = ['user']
         widgets = {'Big3':forms.RadioSelect()}
         
         """since we need all fields from models inside our forms we are specifying __all__ dunder method , otherwise specifiy the 

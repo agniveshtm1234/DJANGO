@@ -19,7 +19,9 @@ def create(request):
     if request.method == "POST":
         frm = animeform(request.POST,request.FILES)
         if frm.is_valid():
-            frm.save()
+            anime = frm.save(commit=False)
+            anime.user = request.user
+            anime.save()
             messages.success(request,"Anime Added Successfully")
             return redirect('list')
     else:
@@ -29,14 +31,14 @@ def create(request):
 @login_required(login_url='user_login')
 @never_cache
 def list(request):  
-    anime_set = animeinfo.objects.all()#took entire records
+    anime_set = animeinfo.objects.filter(user=request.user)#took entire records based on user
     response = render(request,"list.html",{"animes":anime_set})
     return response
 #print(anime_set) --> prints the entire dataset from database in a query set
 
 @login_required(login_url='user_login')
 def edit(request,pk):
-    instance_edited = animeinfo.objects.get(pk=pk)
+    instance_edited = animeinfo.objects.get(pk=pk,user=request.user)
     if request.method == "POST":
         frm = animeform(request.POST,request.FILES,instance=instance_edited) #updates the fields after submission
         if frm.is_valid():
@@ -48,7 +50,7 @@ def edit(request,pk):
 
 @login_required(login_url='login/')
 def delete(request,pk):
-    instance=animeinfo.objects.get(pk=pk) #collect the record
+    instance=animeinfo.objects.get(pk=pk,user=request.user) #collect the record
     if instance.img:  # Replace 'image' with your ImageField name
         image_path = instance.img.path
         if os.path.exists(image_path):
