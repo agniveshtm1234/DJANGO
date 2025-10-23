@@ -37,7 +37,7 @@ def signup(request):
             messages.error(request,'Username already exists. Please choose another')
             has_error=True
         if has_error:
-            return render(request,'users/signup.html')
+            return render(request,'users/signup.html',{'email':email,'username':username})
         User.objects.create_user(username=username,password=password,email=email)
         messages.success(request,"You have Successfully Registered!! Please Log In")
         return redirect('user_login')

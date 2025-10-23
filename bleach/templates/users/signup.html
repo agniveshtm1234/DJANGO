@@ -120,7 +120,7 @@
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                <input type="email" class="form-control" id="email" name="email" value="{{ email|default:'' }}" placeholder="Enter your email" required>
             </div>
 
             <!-- Username field with error handling -->
@@ -132,7 +132,7 @@
                 {% endfor %}">
                 
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                <input type="text" class="form-control" id="username" name="username" value="{{ username|default:'' }}" placeholder="Enter your username" required>
                 
                 {% for message in messages %}
                     {% if 'Username already exists' in message.message %}
