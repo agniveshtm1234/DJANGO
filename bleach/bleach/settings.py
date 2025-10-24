@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!682y=83sv%$hp(zcbt1t8+2srbzck+bq@pn%w$ig-x58amch@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['agniveshtm123.pythonanywhere.com']
 
 
 # Application definition
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'users',
-     
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -110,11 +110,10 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'anime',      # Replace with your MySQL database name
-        'USER': 'agnivesh2746',           # Replace with your MySQL username
-        'PASSWORD': 'agniveshtm',       # Replace with your MySQL password
-        'HOST': 'localhost',               # Or your DB host
-        'PORT': '3306',                    # Default MySQL port
+        'NAME': 'agniveshtm123$anime',      # Replace with your MySQL database name
+        'USER': 'agniveshtm123',           # Replace with your MySQL username
+        'PASSWORD': 'django@agniveshtm',       # Replace with your MySQL password
+        'HOST': 'agniveshtm123.mysql.pythonanywhere-services.com',               # Or your DB host
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
@@ -160,11 +159,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR/'static'
 ]
-
+STATIC_ROOT = BASE_DIR/'staticfiles'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
