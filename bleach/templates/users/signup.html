@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load socialaccount %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -106,6 +107,61 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+            z-index: -1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+        }
+
+        .google-signup {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .google-signup:hover {
+            background: #f8f9fa;
+            border-color: #4285f4;
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .google-signup img {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
     </style>
 </head>
 <body>
@@ -194,6 +250,15 @@
                 <a href="{% url 'user_login' %}">Log in</a>
             </div>
         </form>
+
+        <div class="divider">
+            <span> OR </span>
+        </div>
+
+        <a href="{% provider_login_url 'google' %}" class="google-signup">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+            Sign up with Google
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -7,17 +7,17 @@ from django.views.decorators.cache import never_cache
 # User Authentication System
 @never_cache
 def user_login(request):
-    error = None
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username,password=password)
         if user is not None:
-            login(request,user)
+            login(request,user) #creates a user session with the given password and username
             return redirect('list')
         else:
-            error = "Invalid Credentials"
-    return render(request,'users/login.html',{'error_msg':error})
+            messages.error(request,"Invalid username or password")
+            return redirect('user_login')
+    return render(request,'users/login.html')
 
 def user_logout(request):
     logout(request)
