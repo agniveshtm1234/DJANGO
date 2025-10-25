@@ -28,8 +28,8 @@ def create(request):
         frm=animeform()
     return render(request,"create.html",{"frm":frm}) #passed to the html file
 
-@login_required(login_url='user_login')
 @never_cache
+@login_required(login_url='user_login')
 def list(request):  
     anime_set = animeinfo.objects.filter(user=request.user)#took entire records based on user
     response = render(request,"list.html",{"animes":anime_set})

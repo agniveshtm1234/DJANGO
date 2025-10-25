@@ -111,10 +111,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'anime',      # Replace with your MySQL database name
-        'USER': 'agniveshtm2746',           # Replace with your MySQL username
+        'USER': 'agnivesh2746',           # Replace with your MySQL username
         'PASSWORD': 'agniveshtm',       # Replace with your MySQL password
         'HOST': 'localhost',               # Or your DB host
-        'ROOT': 3306,                   #Replace with your MySQL Port
+        'ROOT': '3306',                   #Replace with your MySQL Port
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
