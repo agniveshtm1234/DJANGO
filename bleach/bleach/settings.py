@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'home',
     'users',
 
+# apps for Open Authorization
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
