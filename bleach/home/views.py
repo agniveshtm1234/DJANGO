@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 import os
 # Create your views here.
-
+# Main Views.py
 def home_page(request):
     visits =int(request.COOKIES.get('visits',0))
     visits+=1
