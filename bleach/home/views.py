@@ -4,6 +4,7 @@ from .forms import animeform
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from django.core.cache import cache
 import os
 # Create your views here.
 # Main Views.py
@@ -31,7 +32,12 @@ def create(request):
 @never_cache
 @login_required(login_url='user_login')
 def list(request):  
-    anime_set = animeinfo.objects.filter(user=request.user)#took entire records based on user
+    cache_key = f"anime_list_{request.user.id}" #unique key per user
+    anime_set = cache.get(cache_key)
+    if not anime_set:
+        print("Fetching from database.......")
+        anime_set = animeinfo.objects.filter(user=request.user)#took entire records based on user
+        cache.set(cache_key,anime_set,120)
     response = render(request,"list.html",{"animes":anime_set})
     return response
 #print(anime_set) --> prints the entire dataset from database in a query set
