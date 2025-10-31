@@ -54,7 +54,7 @@ def edit(request,pk):
         frm = animeform(instance=instance_edited)
     return render(request,'create.html',{"frm":frm})
 
-@login_required(login_url='login/')
+@login_required(login_url='user_login')
 def delete(request,pk):
     instance=animeinfo.objects.get(pk=pk,user=request.user) #collect the record
     if instance.img:  # Replace 'image' with your ImageField name
