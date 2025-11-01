@@ -30,6 +30,9 @@ def signup(request):
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
         has_error = False
+        if User.objects.filter(email=email).exists():
+            messages.error(request,"Accounts with this email already exists. Please enter another email")
+            has_error=True
         if password!=confirm_password:
             messages.error(request,"Passwords do not match. Please try again.")
             has_error=True
