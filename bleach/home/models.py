@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 # Create your models here.
 class CensorInfo(models.Model):
      rating=models.CharField(max_length=8,null=True)
@@ -18,6 +19,7 @@ class studio(models.Model):
           return self.studio_name
      
 class animeinfo(models.Model):
+     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
      user = models.ForeignKey(User, on_delete=models.CASCADE,null = True)
      title=models.CharField(max_length=250)
      year=models.IntegerField(null=True)     # each of these year,title and summary represents a 

@@ -51,6 +51,58 @@
         .search-bar:focus {
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
         }
+        .no-image-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 9998;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.3s ease;
+            position: relative;
+            z-index: 9999;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fee;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -66,6 +118,30 @@
         </div>
     </nav>
     {% include 'menu.html' %}
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 text-center mb-3">Delete Anime?</h3>
+            <p class="text-gray-600 text-center mb-6">
+                Are you sure you want to delete <strong id="animeTitle" class="text-gray-900"></strong>? This action cannot be undone.
+            </p>
+            <div class="flex space-x-4">
+                <button id="cancelDelete" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition duration-300">
+                    Cancel
+                </button>
+                <a id="confirmDelete" href="#" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 text-center">
+                    Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
     <main class="container mx-auto px-4 py-10">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Anime List</h1>
@@ -93,86 +169,150 @@
                 }, 2000);
             </script>
         {% endif %}
-        <div id="animeContainer" class="table-container">
-            <table class="w-full bg-white shadow-2xl rounded-lg overflow-hidden">
-                <thead class="bg-indigo-600 text-white">
-                    <tr>
-                        <th class="py-4 px-6 text-left">Title</th>
-                        <th class="py-4 px-6 text-left">Summary</th>
-                        <th class="py-4 px-6 text-left">Year</th>
-                        <th class="py-4 px-6 text-left">Logo</th>
-                        <th class="py-4 px-6 text-left">Big3</th>
-                        <th class="py-4 px-6 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for anime in animes %}
-                    <tr class="border-b hover:bg-gray-50 transition duration-200">
-                        <td class="py-4 px-6 font-bold text-gray-900">{{ anime.title }}</td>
-                        <td class="py-4 px-6 text-gray-700">{{ anime.summary|upper }}</td>
-                        <td class="py-4 px-6 text-gray-600">{{ anime.year|default:'Not Available' }}</td>
-                        <td class="py-4 px-6"><img src="{{ anime.img.url }}" alt="{{ anime.title }}" class="w-24 h-24 object-cover rounded-md"></td>
-                        <td class="py-4 px-6">
-                            {% if anime.Big3 == "Yes" %}
-                                <span class="text-green-600 font-semibold">YES, '{{ anime.title }}' IS IN BIG3</span>
-                            {% else %}
-                                <span class="text-red-600 font-semibold">NO, '{{ anime.title }}' IS NOT IN BIG3</span>
-                            {% endif %}
-                        </td>
-                        <td class="py-4 px-6 flex space-x-2">
-                            <a href="{% url 'edit' anime.id %}" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Edit</a>
-                            <a href="{% url 'delete' anime.id %}" class="bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Delete</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div id="cardContainer" class="card-grid hidden">
-            {% for anime in animes %}
-            <div class="card bg-white rounded-lg shadow-lg p-6">
-                <img src="{{ anime.img.url }}" alt="{{ anime.title }}" class="w-full h-40 object-cover rounded-md mb-4">
-                <h2 class="text-xl font-bold text-gray-900 mb-2">{{ anime.title }}</h2>
-                <p class="text-gray-700 mb-2">{{ anime.summary|upper|truncatechars:100 }}</p>
-                <p class="text-gray-600 mb-2">Year: {{ anime.year|default:'Not Available' }}</p>
-                <p class="{% if anime.Big3 == 'Yes' %}text-green-600{% else %}text-red-600{% endif %} font-semibold mb-4">
-                    {% if anime.Big3 == "Yes" %}YES, IN BIG3{% else %}NO, NOT IN BIG3{% endif %}
-                </p>
-                <div class="flex space-x-2">
-                    <a href="{% url 'edit' anime.id %}" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Edit</a>
-                    <a href="{% url 'delete' anime.id %}" class="bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Delete</a>
+
+        {% if animes %}
+            <div id="animeContainer" class="table-container">
+                <table class="w-full bg-white shadow-2xl rounded-lg overflow-hidden">
+                    <thead class="bg-indigo-600 text-white">
+                        <tr>
+                            <th class="py-4 px-6 text-left">Title</th>
+                            <th class="py-4 px-6 text-left">Summary</th>
+                            <th class="py-4 px-6 text-left">Year</th>
+                            <th class="py-4 px-6 text-left">Logo</th>
+                            <th class="py-4 px-6 text-left">Big3</th>
+                            <th class="py-4 px-6 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for anime in animes %}
+                        <tr class="border-b hover:bg-gray-50 transition duration-200">
+                            <td class="py-4 px-6 font-bold text-gray-900">{{ anime.title }}</td>
+                            <td class="py-4 px-6 text-gray-700">{{ anime.summary|upper }}</td>
+                            <td class="py-4 px-6 text-gray-600">{{ anime.year|default:'Not Available' }}</td>
+                            <td class="py-4 px-6">
+                                {% if anime.img %}
+                                    <img src="{{ anime.img.url }}" alt="{{ anime.title }}" class="w-24 h-24 object-cover rounded-md">
+                                {% else %}
+                                    <div class="w-24 h-24 no-image-placeholder rounded-md">
+                                        <span class="text-sm">No Image</span>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-6">
+                                {% if anime.Big3 == "Yes" %}
+                                    <span class="text-green-600 font-semibold">YES, '{{ anime.title }}' IS IN BIG3</span>
+                                {% else %}
+                                    <span class="text-red-600 font-semibold">NO, '{{ anime.title }}' IS NOT IN BIG3</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-6 flex space-x-2">
+                                <a href="{% url 'edit' anime.id %}" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Edit</a>
+                                <button class="delete-btn bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300" data-url="{% url 'delete' anime.id %}" data-title="{{ anime.title }}">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div id="cardContainer" class="card-grid hidden">
+                {% for anime in animes %}
+                <div class="card bg-white rounded-lg shadow-lg p-6">
+                    {% if anime.img %}
+                        <img src="{{ anime.img.url }}" alt="{{ anime.title }}" class="w-full h-40 object-cover rounded-md mb-4">
+                    {% else %}
+                        <div class="w-full h-40 no-image-placeholder rounded-md mb-4">
+                            <span>No Image</span>
+                        </div>
+                    {% endif %}
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">{{ anime.title }}</h2>
+                    <p class="text-gray-700 mb-2">{{ anime.summary|upper|truncatechars:100 }}</p>
+                    <p class="text-gray-600 mb-2">Year: {{ anime.year|default:'Not Available' }}</p>
+                    <p class="{% if anime.Big3 == 'Yes' %}text-green-600{% else %}text-red-600{% endif %} font-semibold mb-4">
+                        {% if anime.Big3 == "Yes" %}YES, IN BIG3{% else %}NO, NOT IN BIG3{% endif %}
+                    </p>
+                    <div class="flex space-x-2">
+                        <a href="{% url 'edit' anime.id %}" class="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Edit</a>
+                        <button class="delete-btn bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-300" data-url="{% url 'delete' anime.id %}" data-title="{{ anime.title }}">Delete</button>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        <div class="mt-8 flex justify-center">
-            <div class="inline-flex rounded-lg shadow-sm">
-                {% if animes.has_previous %}
-                    <a href="?page={{ animes.previous_page_number }}" class="px-4 py-2 bg-indigo-600 text-white rounded-l-lg hover:bg-indigo-700">Previous</a>
-                {% endif %}
-                <span class="px-4 py-2 bg-gray-200 text-gray-700">Page {{ animes.number }} of {{ animes.paginator.num_pages }}</span>
-                {% if animes.has_next %}
-                    <a href="?page={{ animes.next_page_number }}" class="px-4 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">Next</a>
-                {% endif %}
+        {% else %}
+            <div class="text-center py-16 bg-white rounded-lg shadow-lg">
+                <svg class="mx-auto h-20 w-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path>
+                </svg>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">No Anime Yet</h3>
+                <p class="text-gray-600 mb-6 text-lg">Start building your collection by adding your first anime!</p>
+                <a href="{% url 'create' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg transition duration-300 inline-block font-semibold text-lg">Add Your First Anime</a>
             </div>
-        </div>
+        {% endif %}
     </main>
     <script>
+        // Modal functionality
+        const deleteModal = document.getElementById('deleteModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+        const animeTitle = document.getElementById('animeTitle');
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = btn.getAttribute('data-url');
+                const title = btn.getAttribute('data-title');
+                
+                animeTitle.textContent = title;
+                confirmDelete.href = url;
+                deleteModal.classList.add('active');
+            });
+        });
+
+        cancelDelete.addEventListener('click', () => {
+            deleteModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                deleteModal.classList.remove('active');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && deleteModal.classList.contains('active')) {
+                deleteModal.classList.remove('active');
+            }
+        });
+
         // Search functionality
         const searchInput = document.getElementById('searchInput');
-        const tableRows = document.querySelectorAll('#animeContainer tr');
+        const tableRows = document.querySelectorAll('#animeContainer tbody tr');
         const cards = document.querySelectorAll('.card');
 
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase();
-            tableRows.forEach(row => {
-                const title = row.querySelector('td:first-child').textContent.toLowerCase();
-                row.style.display = title.includes(searchTerm) ? '' : 'none';
-            });
-            cards.forEach(card => {
-                const title = card.querySelector('h2').textContent.toLowerCase();
-                card.style.display = title.includes(searchTerm) ? '' : 'none';
-            });
+            
+            if (!document.getElementById('animeContainer').classList.contains('hidden')) {
+                tableRows.forEach(row => {
+                    const titleCell = row.querySelector('td:first-child');
+                    if (titleCell) {
+                        const title = titleCell.textContent.toLowerCase();
+                        row.style.display = title.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            }
+            
+            if (!document.getElementById('cardContainer').classList.contains('hidden')) {
+                cards.forEach(card => {
+                    const titleElement = card.querySelector('h2');
+                    if (titleElement) {
+                        const title = titleElement.textContent.toLowerCase();
+                        card.style.display = title.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            }
         });
 
         // Toggle between table and card view
@@ -183,7 +323,13 @@
         toggleButton.addEventListener('click', () => {
             tableContainer.classList.toggle('hidden');
             cardContainer.classList.toggle('hidden');
-            toggleButton.textContent = tableContainer.classList.contains('hidden') ? 'Toggle Table View' : 'Toggle Card View';
+            
+            const isCardView = !cardContainer.classList.contains('hidden');
+            toggleButton.textContent = isCardView ? 'Toggle Table View' : 'Toggle Card View';
+            
+            searchInput.value = '';
+            tableRows.forEach(row => row.style.display = '');
+            cards.forEach(card => card.style.display = '');
         });
     </script>
 </body>

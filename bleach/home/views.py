@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .models import animeinfo
 from .forms import animeform
 from django.contrib import messages
@@ -20,9 +20,9 @@ def create(request):
     if request.method == "POST":
         frm = animeform(request.POST,request.FILES)
         if frm.is_valid():
-            anime = frm.save(commit=False)
-            anime.user = request.user
-            anime.save()
+            frm.instance.user = request.user
+            frm.save()
+            cache.delete(f"anime_list_{request.user.id}")
             messages.success(request,"Anime Added Successfully")
             return redirect('list')
     else:
@@ -44,7 +44,8 @@ def list(request):
 
 @login_required(login_url='user_login')
 def edit(request,pk):
-    instance_edited = animeinfo.objects.get(pk=pk,user=request.user)
+    #instance_edited = animeinfo.objects.get(pk=pk,user=request.user)  --> might raise Doesnot Exist exception to the user,(bad UX)
+    instance_edited = get_object_or_404(animeinfo,pk=pk,user=request.user) #Shows error 404 page handling the error carefully
     if request.method == "POST":
         frm = animeform(request.POST,request.FILES,instance=instance_edited) #updates the fields after submission
         if frm.is_valid():
@@ -56,17 +57,17 @@ def edit(request,pk):
 
 @login_required(login_url='user_login')
 def delete(request,pk):
-    instance=animeinfo.objects.get(pk=pk,user=request.user) #collect the record
-    if instance.img:  # Replace 'image' with your ImageField name
-        image_path = instance.img.path
-        if os.path.exists(image_path):
-            os.remove(image_path) #deletes the user added images from media folder
-    instance.delete()#deleted the record from the server
+    #instance=animeinfo.objects.get(pk=pk,user=request.user) #collect the record
+    instance_deleted = get_object_or_404(animeinfo,pk=pk,user=request.user)
+    if instance_deleted.img and os.path.exists(instance_deleted.img.path):  # Replace 'image' with your ImageField name
+        try:
+            os.remove(instance_deleted.img.path) #deletes the user added images from media folder
+        except OSError:
+            pass
+    instance_deleted.delete()#deleted the record from the server
+    cache.delete(f"anime_list_{request.user.id}")
     anime_set=animeinfo.objects.all()
     return render(request,"list.html",{"animes":anime_set})
-
-
-
 
 
 ''' this was inside  edit() function 
@@ -88,3 +89,11 @@ def delete(request,pk):
     return response
 
 '''
+
+''' anime = frm.save(commit=False)
+            anime.user = request.user
+            anime.save()
+            messages.success(request,"Anime Added Successfully")
+            return redirect('list')
+            
+            for user specificness use this.'''
