@@ -44,7 +44,7 @@ def list(request):
 
 @login_required(login_url='user_login')
 def edit(request,pk):
-    #instance_edited = animeinfo.objects.get(pk=pk,user=request.user)  --> might raise Doesnot Exist exception to the user,(bad UX)
+    # instance_edited = animeinfo.objects.get(pk=pk,user=request.user) --> might raise Doesnot Exist exception to the user,(bad UX)
     instance_edited = get_object_or_404(animeinfo,pk=pk,user=request.user) #Shows error 404 page handling the error carefully
     if request.method == "POST":
         frm = animeform(request.POST,request.FILES,instance=instance_edited) #updates the fields after submission
@@ -57,7 +57,7 @@ def edit(request,pk):
 
 @login_required(login_url='user_login')
 def delete(request,pk):
-    #instance=animeinfo.objects.get(pk=pk,user=request.user) #collect the record
+    # instance_deleted=animeinfo.objects.get(pk=pk,user=request.user) #collect the record
     instance_deleted = get_object_or_404(animeinfo,pk=pk,user=request.user)
     if instance_deleted.img and os.path.exists(instance_deleted.img.path):  # Replace 'image' with your ImageField name
         try:
