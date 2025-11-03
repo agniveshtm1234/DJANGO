@@ -30,8 +30,8 @@ def create(request):
     return render(request,"create.html",{"frm":frm}) #passed to the html file
 
 @never_cache
-@login_required(login_url='user_login')
-def list(request):  
+@login_required(login_url='user_login')  
+def list(request):
     cache_key = f"anime_list_{request.user.id}" #unique key per user
     anime_set = cache.get(cache_key)
     if not anime_set:
